@@ -1,14 +1,16 @@
-const express = require("express");
+import express from "express";
 const app = express();
 
-const { createClient } = require("@libsql/client");
-const logger = require("morgan");
+import { createClient } from "@libsql/client";
+import spotify from "./controllers/spotify.js";
+import logger from "morgan";
 
-const mainRoutes = require("./routes/main");
-const apiRoutes = require("./routes/api");
+import mainRoutes from "./routes/main.js";
+import apiRoutes from "./routes/api.js";
 
-//Pathing to .env
-require("dotenv").config({ path: "./config/.env" });
+//Connect to Spotify
+const token = await spotify.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET)
+console.table(token)
 
 //Connect to DB
 const client = createClient({
