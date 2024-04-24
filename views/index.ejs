@@ -1,43 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" un-cloak class="h-full">
+<html lang="en" un-cloak class="h-dvh">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Songolf</title>
     <link rel="stylesheet" href="/css/main.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    <script defer src="/js/unocss.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css">
     <script defer src="/js/htmx.js"></script>
 </head>
 
-<body class="h-full">
-    <nav>
-        <h1>Songolf</h1>
-        <button hx-get="/profile" hx-swap="innerHTML" hx-target="main">Profile</button>
+<body class="h-dvh">
+    <nav class="navbar bg-base-100 fixed">
+        <div class="flex-1">
+            <span class="text-xl">Songolf</span>
+        </div>
+        <div class="flex-none">
+            <button class="btn btn-square btn-ghost" id="navButton" hx-get="/profile" hx-swap="innerHTML" hx-target="main">Profile</button>
+        </div>
     </nav>
-    <main class="h-full">
-        <section class="h-1/2">
-            <button>Solo</button>
-            <button>Vs.</button>
-        </section>
-        <section class="h-1/2">
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">User</th>
-                        <th scope="col">Playlist</th>
-                        <th scope="col">Join</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Placeholder</td>
-                        <td>Placeholder</td>
-                        <td>Placeholder</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+    <main class="flex flex-col h-full">
+        <%- include('components/home') -%>
     </main>
 </body>
 </html>
