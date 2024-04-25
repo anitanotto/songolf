@@ -12,6 +12,9 @@ import apiRoutes from "./routes/api.js";
 const token = await spotify.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET)
 console.table(token)
 
+const playlist = await spotify.getPlaylist("6UeSakyzhiEt4NB3UAd6NQ", token.access_token);
+console.log(spotify.parsePlaylist(playlist))
+
 //Connect to DB
 const client = createClient({
     url: process.env.TURSO_DATABASE_URL,
