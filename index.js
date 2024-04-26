@@ -13,7 +13,14 @@ const token = await spotify.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.
 console.table(token)
 
 const playlist = await spotify.getPlaylist("6UeSakyzhiEt4NB3UAd6NQ", token.access_token);
-console.log(spotify.parsePlaylist(playlist))
+//console.log(playlist)
+const tables = spotify.parsePlaylistTables(playlist)
+
+for (const key of Object.keys(tables)) {
+    console.table(tables[key])
+}
+
+console.log(tables)
 
 //Connect to DB
 const client = createClient({
