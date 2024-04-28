@@ -1,3 +1,5 @@
+import { writeFileSync } from "node:fs";
+
 export default {
     getToken: async (client_id, client_secret) => {
         const url = "https://accounts.spotify.com/api/token";
@@ -26,8 +28,8 @@ export default {
         const data = await res.json()
         
         data.formatted =  {
-            name: data.name,
             playlistId: data.id,
+            name: csvEncode(data.name),
             imageSrc: data.images.at(-1)?.url ?? null,
         }
 
@@ -35,12 +37,14 @@ export default {
     },
     parsePlaylistTables: (playlist) => {
         const res =  {
-            playlist: playlist.formatted,
-            playlistTrack: [[],[]],
+            playlist: [playlist.formatted],
+            playlistTrack: [],
             tracks: [],
-            artistTrack: [[],[]],
-            artists: {}
+            artistTrack: [],
+            artists: []
         };
+
+        let count = 0;
 
         for (const item of playlist.tracks.items) {
             const track = item.track;
@@ -48,27 +52,71 @@ export default {
             const formattedArtists = artists.map((a) => a.name).join(", ");
 
             const formattedTrack = {
-                formattedArtists: formattedArtists,
-                formattedArtistsAndName: `${formattedArtists} - ${track.name}`,
                 trackId: track.id,
-                imgSrc: track.album.images.at(-1)?.url ?? null,
-                name: track.name,
-                year: Number(track.album.release_date.split('-')[0]),
                 previewUrl: track.preview_url,
+                name: csvEncode(track.name),
+                artists: csvEncode(formattedArtists),
+                artistsAndName: csvEncode(`${formattedArtists} - ${track.name}`),
+                imageSrc: track.album.images.at(-1)?.url ?? null,
+                year: Number(track.album.release_date.split('-')[0]),
                 popularity: track.popularity
             };
-
-            res.playlistTrack[0].push(res.playlist.playlistId);
-            res.playlistTrack[1].push(formattedTrack.trackId);
-            res.tracks.push(formattedTrack);
             
-            artists.forEach(artist => {
-                res.artistTrack[0].push(artist.id);
-                res.artistTrack[1].push(formattedTrack.trackId);
-                res.artists[artist.id] = artist.name;
-            });
+            if (formattedTrack.previewUrl) {
+                res.tracks.push(formattedTrack);
+
+                res.playlistTrack.push({
+                    playlistTrackIndex: playlist.formatted.playlistId + "-" + count,
+                    playlistId: playlist.formatted.playlistId,
+                    trackId: formattedTrack.trackId
+                });
+            
+                artists.forEach(artist => {
+                    res.artistTrack.push({
+                        artistId: artist.id,
+                        trackId: formattedTrack.trackId
+                    });
+
+                    res.artists.push({
+                        artistId: artist.id,
+                        name: csvEncode(artist.name)
+                    });
+                });
+                
+                count++;
+            }
         }
+
+        return res;
+    },
+    formatTableAsCsv: (name, table) => {
+        let res = "";
+
+        res += Object.keys(table[0]).join(",") + "\n";
+
+        for (const row of table) {
+            res += Object.values(row).join(",") + "\n";
+        }
+        
+        writeFileSync(`./csv/${name}.csv`, res);
 
         return res;
     }
 };
+
+
+function csvEncode(s) {
+    let res = '"';
+
+    for (const c of s) {
+        if (c === '"') {
+            res += '""';
+        } else {
+            res += c;
+        }
+    }
+
+    res += '"';
+
+    return res;
+}

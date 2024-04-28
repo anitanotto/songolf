@@ -13,20 +13,29 @@ const token = await spotify.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.
 console.table(token)
 
 const playlist = await spotify.getPlaylist("6UeSakyzhiEt4NB3UAd6NQ", token.access_token);
-//console.log(playlist)
+
 const tables = spotify.parsePlaylistTables(playlist)
 
 for (const key of Object.keys(tables)) {
-    console.table(tables[key])
+    console.log(key)
+    //if (key !== 'playlist') console.log(spotify.formatTableAsCsv(tables[key]))
+    //if (key !== 'playlist') {
+        spotify.formatTableAsCsv(key, tables[key])
+    //}
+    console.log('done')
 }
 
-console.log(tables)
 
 //Connect to DB
 const client = createClient({
     url: process.env.TURSO_DATABASE_URL,
     authToken: process.env.TURSO_AUTH_TOKEN,
 });
+
+
+//console.log('insert row')
+//await client.execute(`INSERT INTO playlists VALUES ("6UeSakyzhiEt4NB3UAd6NQ", "Billboard Hot 100", "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da843bd5501a335b265807df34db");`)
+//console.log('inserted')
 
 //Use EJS for views
 app.set("view engine", "ejs");
