@@ -16,14 +16,7 @@ const playlist = await spotify.getPlaylist("6UeSakyzhiEt4NB3UAd6NQ", token.acces
 
 const tables = spotify.parsePlaylistTables(playlist)
 
-for (const key of Object.keys(tables)) {
-    console.log(key)
-    //if (key !== 'playlist') console.log(spotify.formatTableAsCsv(tables[key]))
-    //if (key !== 'playlist') {
-        spotify.formatTableAsCsv(key, tables[key])
-    //}
-    console.log('done')
-}
+//await console.log(spotify.updatePlaylist(tables))
 
 
 //Connect to DB
@@ -31,6 +24,8 @@ const client = createClient({
     url: process.env.TURSO_DATABASE_URL,
     authToken: process.env.TURSO_AUTH_TOKEN,
 });
+
+console.log(await client.execute("SELECT * FROM playlists;"))
 
 
 //console.log('insert row')

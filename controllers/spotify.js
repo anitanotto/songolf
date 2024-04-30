@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { createClient } from "@libsql/client";
 
 export default {
     getToken: async (client_id, client_secret) => {
@@ -29,7 +29,7 @@ export default {
         
         data.formatted =  {
             playlistId: data.id,
-            name: csvEncode(data.name),
+            name: data.name,
             imageSrc: data.images.at(-1)?.url ?? null,
         }
 
@@ -54,9 +54,9 @@ export default {
             const formattedTrack = {
                 trackId: track.id,
                 previewUrl: track.preview_url,
-                name: csvEncode(track.name),
-                artists: csvEncode(formattedArtists),
-                artistsAndName: csvEncode(`${formattedArtists} - ${track.name}`),
+                name: track.name,
+                artists: formattedArtists,
+                artistsAndName: `"${formattedArtists} - ${track.name}"`,
                 imageSrc: track.album.images.at(-1)?.url ?? null,
                 year: Number(track.album.release_date.split('-')[0]),
                 popularity: track.popularity
@@ -79,7 +79,7 @@ export default {
 
                     res.artists.push({
                         artistId: artist.id,
-                        name: csvEncode(artist.name)
+                        name: artist.name
                     });
                 });
                 
@@ -89,34 +89,46 @@ export default {
 
         return res;
     },
-    formatTableAsCsv: (name, table) => {
-        let res = "";
+    updatePlaylist: async (data) => {
+        const client = createClient({
+            url: process.env.TURSO_DATABASE_URL,
+            authToken: process.env.TURSO_AUTH_TOKEN,
+        });
 
-        res += Object.keys(table[0]).join(",") + "\n";
+        const playlist = data.playlist[0];
+        console.log(playlist)
+        const tracks = data.tracks;
+        const playlistTrack = data.playlistTrack;
 
-        for (const row of table) {
-            res += Object.values(row).join(",") + "\n";
+        await client.execute(`INSERT INTO playlists VALUES ("${playlist.playlistId}", "${playlist.name}", "${playlist.imgSrc}")
+        ON CONFLICT(playlistId)
+        DO UPDATE SET name="${playlist.name}", 
+                      imageSrc="${playlist.imageSrc}";`);
+
+        for await (const track of tracks) {
+            client.execute(`INSERT INTO tracks VALUES ("${track.trackId}", "${track.name}", "${track.artists}", "${track.artistsAndName}", "${track.imageSrc}", ${track.year}, ${track.popularity}")
+            ON CONFLICT(trackId)
+            DO UPDATE SET name="${track.name}",
+                          artists="${track.artists}",
+                          artistsAndName="${track.artistsAndName}",
+                          imageSrc="${track.imageSrc}",
+                          year=${track.year},
+                          popularity=${track.popularity};`);
+        };
+
+        const numCurrentTracks = await client.execute().rows.length;
+        const numNewTracks = tracks.length;
+
+        if (numCurrentTracks > numNewTracks) {
+            await console.execute(`DELETE FROM playlistTrack WHERE playlistId="${pt.playlistId}";`);
         }
-        
-        writeFileSync(`./csv/${name}.csv`, res);
 
-        return res;
+        for await (const pt of playlistTrack) {
+            client.execute(`INSERT INTO playlistTrack  VALUES("${pt.playlistTrackIndex}", "${pt.playlistId}", "${pt.trackId}")
+            ON CONFLICT(playlistTrackIndex)
+            DO UPDATE SET playlistId="${pt.playlistId}",
+                          trackId="${pt.trackId}";`);
+        };
+
     }
 };
-
-
-function csvEncode(s) {
-    let res = '"';
-
-    for (const c of s) {
-        if (c === '"') {
-            res += '""';
-        } else {
-            res += c;
-        }
-    }
-
-    res += '"';
-
-    return res;
-}
