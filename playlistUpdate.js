@@ -1,9 +1,15 @@
 import spotify from "./controllers/spotify.js";
 
 //Connect to Spotify
-const token = await spotify.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET)
+let token = await spotify.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET)
 
-const ids = [];
+console.log(token)
+
+token = token.access_token
+
+console.log(token)
+
+const ids = ["6UeSakyzhiEt4NB3UAd6NQ","2nxk7JE73agGuLDdbBjrAh"];
 
 for (const id of ids) {
     const playlist = await spotify.getPlaylist(id, token);

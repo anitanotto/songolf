@@ -56,7 +56,7 @@ export default {
                 previewUrl: track.preview_url,
                 name: track.name,
                 artists: formattedArtists,
-                artistsAndName: `"${formattedArtists} - ${track.name}"`,
+                artistsAndName: `${formattedArtists} - ${track.name}`,
                 imageSrc: track.album.images.at(-1)?.url ?? null,
                 year: Number(track.album.release_date.split('-')[0]),
                 popularity: track.popularity
@@ -96,7 +96,6 @@ export default {
         });
 
         const playlist = data.playlist[0];
-        console.log(playlist)
         const tracks = data.tracks;
         const playlistTrack = data.playlistTrack;
 
@@ -105,18 +104,25 @@ export default {
         DO UPDATE SET name="${playlist.name}", 
                       imageSrc="${playlist.imageSrc}";`);
 
-        for await (const track of tracks) {
-            client.execute(`INSERT INTO tracks VALUES ("${track.trackId}", "${track.name}", "${track.artists}", "${track.artistsAndName}", "${track.imageSrc}", ${track.year}, ${track.popularity}")
+
+        for (const track of tracks) {
+            console.log(`Updating track ${track.name}`);
+
+            await client.execute(`INSERT INTO tracks VALUES ("${track.trackId}", "${track.previewUrl}", "${track.name}", "${track.artists}", "${track.artistsAndName}", "${track.imageSrc}", ${track.year}, ${track.popularity})
             ON CONFLICT(trackId)
-            DO UPDATE SET name="${track.name}",
+            DO UPDATE SET previewUrl="${track.previewUrl}",
+                          name="${track.name}",
                           artists="${track.artists}",
                           artistsAndName="${track.artistsAndName}",
                           imageSrc="${track.imageSrc}",
                           year=${track.year},
                           popularity=${track.popularity};`);
         };
-
-        const numCurrentTracks = await client.execute().rows.length;
+        
+        let numCurrentTracks = await client.execute(`SELECT * FROM playlistTrack where playlistId="${playlist.playlistId}";`)
+        console.log(numCurrentTracks)
+        console.table(numCurrentTracks)
+        numCurrentTracks = numCurrentTracks.rows.length
         const numNewTracks = tracks.length;
 
         if (numCurrentTracks > numNewTracks) {
@@ -124,11 +130,10 @@ export default {
         }
 
         for await (const pt of playlistTrack) {
-            client.execute(`INSERT INTO playlistTrack  VALUES("${pt.playlistTrackIndex}", "${pt.playlistId}", "${pt.trackId}")
+            client.execute(`INSERT INTO playlistTrack VALUES("${pt.playlistTrackIndex}", "${pt.playlistId}", "${pt.trackId}")
             ON CONFLICT(playlistTrackIndex)
             DO UPDATE SET playlistId="${pt.playlistId}",
                           trackId="${pt.trackId}";`);
         };
-
     }
 };
