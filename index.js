@@ -3,6 +3,7 @@ import { WebSocketServer, WebSocket } from "ws";
 
 const app = express();
 
+import ejs from "ejs";
 import logger from "morgan";
 
 import mainRoutes from "./routes/main.js";
@@ -35,16 +36,19 @@ const clients = new Map();
 const lobbies = new Map();
 const games = new Map();
 
-const wsServer = new WebSocketServer({ "server": server });
+const wsServer = new WebSocketServer({ "server": server, "path": "/ws" });
 wsServer.on("connection", (ws, req) => {
-
+    console.log('connected')
+    console.log(req.headers)
     ws.send('welcome')
 
     ws.on('message', (data) => {
         const message = JSON.parse(data.toString());
-        console.log(`${message.message} socket request from ${message.uuid}`)
+        console.log(`${message.message} socket request from ${message.userId}`)
         if (message.message === "connect") {
-            clients.set(message.uuid, ws)
+            clients.set(message.userId, ws)
+            console.log('connection inside')
+            ws.send('<p hx-swap-oob="afterbegin:section">test</p>')
         }
     });
 

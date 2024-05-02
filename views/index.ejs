@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Songolf</title>
-    <script async src="/js/main.js"></script>
+    <script defer src="/js/main.js"></script>
     <link rel="stylesheet" href="/css/main.css">
     <link href="/css/daisyui.css" rel="stylesheet" type="text/css">
     <script defer src="/js/unocss.js"></script>
@@ -13,7 +13,7 @@
     <script defer src="/js/ws.js"></script>
 </head>
 
-<body class="h-dvh">
+<body class="h-dvh" hx-ext="ws" ws-connect="/ws">
     <nav class="navbar bg-base-100 fixed">
         <div class="flex-1">
             <span class="text-xl">Songolf</span>

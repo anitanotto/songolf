@@ -1,5 +1,5 @@
 <section class="h-1/2 flex justify-around items-center" hx-trigger="revealed" hx-get="/navButton" hx-target="#navButton" hx-swap="outerHTML" hx-vals='{ "button": "profile" }'>
-    <button class="btn">Solo</button>
+    <button id="connect" ws-send type="submit" class="btn" hx-swap-oob="true">Solo</button>
     <button class="btn">Vs.</button>
 </section>
 
