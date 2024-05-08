@@ -8,6 +8,7 @@ import logger from "morgan";
 
 import mainRoutes from "./routes/main.js";
 import apiRoutes from "./routes/api.js";
+import songolfRouter from "./routes/songolf.js";
 
 //Use EJS for views
 app.set("view engine", "ejs");
@@ -32,27 +33,23 @@ const server = app.listen(process.env.PORT, () => {
 });
 
 //Map client UUIDs to socket connections
-const clients = new Map();
-const lobbies = new Map();
-const games = new Map();
+const hub = {
+    clients: new Map(),
+    lobbies: new Map(),
+    games: new Map()
+};
 
 const wsServer = new WebSocketServer({ "server": server, "path": "/ws" });
 wsServer.on("connection", (ws, req) => {
-    console.log('connected')
-    console.log(req.headers)
-    ws.send('welcome')
+    ws.send('Welcome to Songolf!')
 
-    ws.on('message', (data) => {
+    ws.on('message', async (data) => {
         const message = JSON.parse(data.toString());
-        console.log(`${message.message} socket request from ${message.userId}`)
-        if (message.message === "connect") {
-            clients.set(message.userId, ws)
-            console.log('connection inside')
-            ws.send('<p hx-swap-oob="afterbegin:section">test</p>')
-        }
+        console.log(`WS  / ${message.message} message recieved from UUID ${message.userId}`);
+        songolfRouter(message, ws, hub);
     });
 
     ws.on('close', () => {
-        console.log('closed')
+        //
     });
 });

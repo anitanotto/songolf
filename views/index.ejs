@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" un-cloak class="h-dvh">
+<html lang="en" class="h-dvh">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,7 +13,7 @@
     <script defer src="/js/ws.js"></script>
 </head>
 
-<body class="h-dvh" hx-ext="ws" ws-connect="/ws">
+<body un-cloak class="h-dvh" hx-ext="ws" ws-connect="/ws" hx-trigger="revealed">
     <nav class="navbar bg-base-100 fixed">
         <div class="flex-1">
             <span class="text-xl">Songolf</span>
@@ -23,7 +23,10 @@
         </div>
     </nav>
     <main class="flex flex-col h-full">
-        <%- include('components/home') -%>
+
+            <section class="h-full flex justify-around">
+                <span class="loading loading-spinner loading-lg"></span>
+            </section>
     </main>
 </body>
 </html>
