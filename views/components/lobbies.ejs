@@ -1,11 +1,17 @@
-<tbody hx-swap-oob="innerHTML:tbody">
-    <% if (lobbies == null) { %>
+<tbody id="getLobbies" ws-send hx-trigger="every 1s" hx-swap-oob="outerHTML:tbody">
+    <% if (lobbies.size === 0) { %>
         <tr>
             <td>!</td>
             <td>No lobbies available, start a multiplayer game to create one!</td>
             <td>!</td>
         </tr>
     <% } else { %>
-
+        <% for (const lobby of lobbies) { %>
+            <tr>
+                <td><%=lobby[1].username%></td>
+                <td><%=lobby[1].playlistName%></td>
+                <td><button id="joinLobby-<%=lobby[1].username%>" ws-send class="btn btn-primary">Join</td></td>
+            </tr>
+        <% } %>
     <% } %>
 </tbody>

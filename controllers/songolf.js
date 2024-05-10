@@ -16,27 +16,50 @@ export default {
 
         //Otherwise
         hub.clients.set(message.userId, socket);
-        const res = await ejs.renderFile("./views/components/home.ejs");
-        socket.send(res);
+        const html = await ejs.renderFile("./views/components/home.ejs");
+        socket.send(html);
     },
     getLobbies: async (message, socket, hub) => {
         const lobbies = null;
-        const res = await ejs.renderFile("./views/components/lobbies.ejs", { lobbies: lobbies });
-        socket.send(res);
+        const html = await ejs.renderFile("./views/components/lobbies.ejs", { lobbies: hub.lobbies });
+        socket.send(html);
     },
-    createSoloGame: (message, socket, hub) => {
-
+    createSoloGame: async (message, socket, hub) => {
+        const html = await ejs.renderFile("./views/components/gameOptions.ejs", { mode: "solo", playlists: hub.playlists });
+        socket.send(html);
     },
-    createMultiGame: (message, socket, hub) => {
-
+    createMultiGame: async (message, socket, hub) => {
+        const html = await ejs.renderFile("./views/components/gameOptions.ejs", { mode: "multi", playlists: hub.playlists });
+        socket.send(html);
     },
-    joinLobby: (message, socket, hub) => {
+    joinLobby: (message, socket, hub, index) => {
+        if (index === undefined) {
+            //If player is creating a new lobby
+            const playlist = hub.playlists.get(message.playlist).name
+            hub.lobbies.set(message.userId, { username: "test", playlistName: playlist })
+            console.log(message)
+        } else {
+            //If player is joining an existing lobby
+        }
+    },
+    leaveLobby: (message, socket, hub) => {
 
     },
     readyUp: (message, socket, hub) => {
 
     },
-    startGame: (message, socket, hub) => {
+    unready: (message, socket, hub) => {
 
+    },
+    startGame: (message, socket, hub) => {
+        console.log(message)
+
+        if (message.solo === "true") {
+            //If player is starting a solo game
+
+        } else {
+            //If lobby is starting a vs game
+
+        }
     }
 }

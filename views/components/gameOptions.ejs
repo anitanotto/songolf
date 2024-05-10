@@ -1,0 +1,50 @@
+<% let id = "" %>
+<% if (mode === "solo") { %>
+<%     id = "startGame"; %>
+<% } else if (mode === "multi") { %>
+<%     id = "joinLobby"; %>
+<% } %>
+<div hx-swap-oob="innerHTML:main">
+    <section class="h-full flex justify-around items-center" >
+        <form class="card shadow-xl">
+            <div class="card-body items-center text-center">
+                <h2 class="card-title">Game options</h2>
+                <p>Select a playlist:</p>
+                <select name="playlist" class="select select-bordered w-full"</select>
+                    <% for (const playlist of playlists) { %>
+                        <option value="<%=playlist[0]%>"><%=playlist[1].name%></option>
+                    <% } %>
+                </select>
+                <p>How many songs to play this match?</p>
+                <input name="numSongs" type="range" min="1" max="18" class="range" step="1">
+                <div class="w-full flex justify-between text-xs px-2">
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                    <span>|</span>
+                </div>
+                <div class="card-actions">
+                    <button id="<%=id%>" ws-send class="btn btn-primary">Start</button>
+                </div>
+            </div>
+            <% if (mode === "solo") { %>
+                <input type="hidden" name="solo" value="true">
+            <% } %>
+        </form>
+    </section>
+</div>
+
