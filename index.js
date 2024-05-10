@@ -45,6 +45,8 @@ wsServer.on("connection", (ws, req) => {
 
     ws.on('message', async (data) => {
         const message = JSON.parse(data.toString());
+        // If message.includes "-" split by it
+        // extra parameter i after - for indexing games and lobbies
         console.log(`WS  / ${message.message} message recieved from UUID ${message.userId}`);
         songolfRouter(message, ws, hub);
     });

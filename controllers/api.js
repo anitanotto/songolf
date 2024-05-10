@@ -7,7 +7,5 @@ const client = createClient({
 });
 
 export default {
-    getApi: (req, res) => {
-        res.send("API Response");
-    }
+    getApi: () => { }
 };
