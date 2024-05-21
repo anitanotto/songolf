@@ -37,6 +37,12 @@
                     <span>|</span>
                     <span>|</span>
                 </div>
+                <p>Select answer mode:</p>
+                <div class="join">
+                    <input type="radio" name="mode" class="btn join-item" aria-label="Artist" value="artist">
+                    <input type="radio" name="mode" class="btn join-item" aria-label="Both" checked value="both">
+                    <input type="radio" name="mode" class="btn join-item" aria-label="Title" value="title">
+                </div>
                 <div class="card-actions">
                     <button id="<%=id%>" ws-send class="btn btn-primary">Start</button>
                 </div>

@@ -6,6 +6,11 @@ const client = createClient({
     authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
+async function sendLoading(type, socket, message) {
+    const html = await ejs.renderFile(`./views/components/loading${type}.ejs`, { message: message });
+    socket.send(html);
+}
+
 export default {
     connect: async (message, socket, hub) => {
         // Check if message.userID is in DB or hub.clients
@@ -15,12 +20,15 @@ export default {
         // Send them that lobby or game if they are
 
         //Otherwise
+        await sendLoading("Message", socket, "Connected!");
         hub.clients.set(message.userId, socket);
         const html = await ejs.renderFile("./views/components/home.ejs");
         socket.send(html);
     },
+    register: async (message, socket, hub) => {
+        //Let new users set their username, send error if name exists in db
+    },
     getLobbies: async (message, socket, hub) => {
-        const lobbies = null;
         const html = await ejs.renderFile("./views/components/lobbies.ejs", { lobbies: hub.lobbies });
         socket.send(html);
     },

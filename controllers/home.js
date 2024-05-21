@@ -1,6 +1,6 @@
 export default {
     getIndex: (req, res) => {
-        res.render("index.ejs");
+        res.render("index.ejs", { message: "Connecting to game server..." });
     },
     getHome: (req, res) => {
         res.render("components/home.ejs");

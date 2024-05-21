@@ -22,11 +22,6 @@
             <button class="btn btn-square btn-ghost" id="navButton" hx-get="/profile" hx-swap="innerHTML" hx-target="main">Profile</button>
         </div>
     </nav>
-    <main class="flex flex-col h-full">
-
-            <section class="h-full flex justify-around">
-                <span class="loading loading-spinner loading-lg"></span>
-            </section>
-    </main>
+    <%- include('components/loadingScreen') -%>
 </body>
 </html>
